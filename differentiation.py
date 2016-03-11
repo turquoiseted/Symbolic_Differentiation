@@ -1,5 +1,16 @@
 "time to differentiate"
 
+"""
+to do list:
+o parse output
+    - remove 0s and surrounding adds
+    - replace +s with -s when relevant
+o allow for chain rule
+o allow for bracket chain rule
+o do more advanced trig
+o logs
+"""
+
 def dif(equ):
     """
     Takes the input and finds out which way it should be differentiated
@@ -23,6 +34,7 @@ def dif(equ):
             ##needs formatting
         else: 
             result += x
+    result = parseOutput(result)
     return result
 
 def trigEqu(funct):
@@ -185,46 +197,68 @@ def parseCoefficent(funct):
         
     return coeff
 
+def parseOutput(funct):
+    funct_pieces = parseEquation(funct)
+    if "0" in funct_pieces:
+        location = funct_pieces.index("0")
+        
+        if funct_pieces[location - 2] != "=":
+            funct_pieces.pop(location - 3)
+            funct_pieces.pop(location - 3)
+            funct_pieces.pop(location - 3)
+            funct_pieces.pop(location - 3)
+            
+        output = ""
+        for item in funct_pieces:
+            output += item
+        return output
+    else:
+        return funct
+                                      
+
 #####TESTS#####
 def tests():
     
     print()
     
-    #test 0.5
+    #test 0.5 - values
     assert dif("y = 1") == "dy/dx = 0"
-    #test 1
+    #test 1 - parse equ, very simple linear
     assert parseEquation("y = x") == ["y", " ", "=", " ", "x"]
     assert dif("y = x") == "dy/dx = 1"
-    assert dif("y = x + 2") == "dy/dx = 1 + 0" #ammended
-    #test 2
+    assert dif("y = x + 2") == "dy/dx = 1" #ammended
+    #test 2 - squares
     assert parseEquation("x^2") == ["x^2"]
     assert dif("y = x^2") == "dy/dx = 2x"
-    #test 3
+    #test 3 - coefficents & linear
     assert dif("y = 2x") == "dy/dx = 2"
-    #test 4
+    #test 4 - linear equation moved to a funct
     assert linearEqu("x") == "1"
     assert linearEqu("20x") == "20"
-    #test 5
+    #test 5 - basic polynomials
     assert polynomialEqu("x^2") == "2x"
     assert polynomialEqu("2x^2") == "4x"
     assert polynomialEqu("x^3") == "3x^2"
     assert polynomialEqu("25x^4") == "100x^3"
-    #text 5.5
+    #text 5.5 - more adv polynomials
     assert dif("y = x^3") == "dy/dx = 3x^2"
     assert dif("y = 3x^5 + 2x + 5x^2") == "dy/dx = 15x^4 + 2 + 10x"
-    #test 6
+    #test 6 - exponentials
     assert dif("y = e^x") == "dy/dx = e^x"
-    #test 7
+    #test 7 - more adv exponentials
     assert dif("y = e^2x^2") == "dy/dx = 4xe^2x^2"
     assert dif("y = 3e^x") == "dy/dx = 3e^x"
     assert dif("y = 3e^2x^2") == "dy/dx = 12xe^2x^2"
-    #test 8
+    #test 8 - basic trig
     assert dif("y = cos(x)") == "dy/dx = -sin(x)"
     assert dif("y = sin(x)") == "dy/dx = cos(x)"
-    #test 9
+    #test 9 - more adv trig
     assert dif("y = cos(2x)") == "dy/dx = -2sin(2x)"
     assert dif("y = sin(2x)") == "dy/dx = 2cos(2x)"
     assert dif("y = 3sin(x^2)") == "dy/dx = 6xcos(x^2)"
+    #test 10 - parse output
+    assert dif("y = 2x + 2") == "dy/dx = 2"
+    assert dif("y = 3sin(x^2) + 6") == "dy/dx = 6xcos(x^2)"
     
 
 tests()
