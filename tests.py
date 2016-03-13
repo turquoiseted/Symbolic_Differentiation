@@ -3,8 +3,12 @@ import differentiation
 #####TESTS#####
 
 
-def tests():
-    print(differentiation.dif("y = x^2*x"))
+def test():
+    """
+
+    :rtype: tests
+    """
+    print()
 
     # test 0.5 - values
     assert differentiation.dif("y = 1") == "dy/dx = 0"
@@ -45,7 +49,7 @@ def tests():
     assert differentiation.dif("y = 2x + 2") == "dy/dx = 2"
     assert differentiation.dif("y = 3sin(x^2) + 6") == "dy/dx = 6xcos(x^2)"
     # test 11 - negative powers
-    assert differentiation.dif("y = x^-1") == "dy/dx = -1x^-2"
+    assert differentiation.dif("y = x^-1") == "dy/dx = -x^-2" # ammended
     # assert dif("y = x + x^-1") == "dy/dx = 1 + -1x^-2" #this needs to be better output
     assert differentiation.dif("y = x + x^-1") == "dy/dx = 1 - x^-2"
     # test 11.5 - output gathers like terms
@@ -56,3 +60,5 @@ def tests():
 
     # assorted tests
     assert differentiation.parse_output("dy/dx = 1x") == "dy/dx = x"
+
+test()

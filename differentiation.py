@@ -1,5 +1,4 @@
 """time to differentiate"""
-import tests
 
 """
 to do list:
@@ -30,10 +29,8 @@ def dif(equ):
             result += trig_equ(x)
         elif "e" in x:
             result += exponential_equation(x)
-        elif "^" in x:
-            result += polynomial_equation(x)
         elif "x" in x:
-            result += linear_equation(x)
+            result += polynomial_equation(x)
         elif x == "y":
             result += "dy/dx"
         elif x == "dy/dx":
@@ -75,8 +72,6 @@ def trig_equ(funct):
         equation = funct[4:-1]
         if "cos" in funct:
             new_equ += "-"
-            if equation == "x":
-                return "-sin(x)"
             new_equ += dif(equation)
             new_equ += "sin(" + equation + ")"
             return new_equ
@@ -95,10 +90,6 @@ def trig_equ(funct):
 
         if "cos" in funct:
             new_equ = "-"
-            if equation == "x":
-                new_equ += coefficient + "sin(x)"
-                return new_equ
-
             bracket = dif(equation)
             new_equ += str(int(parse_coefficient(bracket)) * int(coefficient))
             new_equ += bracket[len(parse_coefficient(bracket)):]
@@ -107,10 +98,6 @@ def trig_equ(funct):
 
         elif "sin" in funct:
             new_equ = ""
-            if equation == "x":
-                new_equ += coefficient + "cos(x)"
-                return new_equ
-
             bracket = dif(equation)
             new_equ += str(int(parse_coefficient(bracket)) * int(coefficient))
             new_equ += bracket[len(parse_coefficient(bracket)):]
@@ -219,24 +206,40 @@ def parse_coefficient(funct):
     Works out the just the coefficient of the given function
     :param funct:
     """
-    coefficient = ""
-    count = 0
-    while (funct[count] != "x") and (funct[count] != "e") and (funct[count] != "c") and (funct[count] != "s"):
-        coefficient += funct[count]
-        count += 1
+    if funct[0] == "x":
+        coefficient = 1
+    else:
+        coefficient = ""
+        count = 0
+        while (funct[count] != "x") and (funct[count] != "e") and (funct[count] != "c") and (funct[count] != "s"):
+            coefficient += funct[count]
+            count += 1
 
     return coefficient
 
 
 def parse_output(funct):
     """
-    Takes the outputted string and ensures good formatting/
+    Takes the outputted string and ensures good formatting, avoiding 1* +- etc
     :param funct:
     :return:
     """
     # string.count will find my dupes
 
     funct_pieces = parse_equation(funct)
+    if "-" in funct:
+        for items in funct_pieces:
+            if "-" in items:
+                if items != "-":
+                    location = funct_pieces.index(items)
+                    if funct_pieces[location - 2] != "=":
+                        if funct_pieces[location - 2] == "+":
+                            funct_pieces.insert(location - 2, "-")
+                        else:
+                            funct_pieces.insert(location - 2, "+")
+                        funct_pieces.pop(location - 1)
+                        funct_pieces[location] = funct_pieces[location][2:]
+    output = ""
     if "1" in funct:
         for items in funct_pieces:
             if "1" in items:
@@ -246,32 +249,21 @@ def parse_output(funct):
                         funct_pieces[location] = funct_pieces[location][1:]
                     elif (funct_pieces[location - 1] == " ") and (items[:2] == "1*") and (items[2] == "x"):
                         funct_pieces[location] = funct_pieces[location][2:]
+                    elif (funct_pieces[location - 1] == " ") and (items[:2] == "-1") and (items[2] == "x"):
+                        funct_pieces[location] = funct_pieces[location][0] + funct_pieces[location][2:]
+                    elif (funct_pieces[location - 1] == " ") and (items[:2] == "-1") and (items[2] == "c"):
+                        funct_pieces[location] = funct_pieces[location][0] + funct_pieces[location][2:]
+                    elif (funct_pieces[location - 1] == " ") and (items[:2] == "-1") and (items[2] == "s"):
+                        funct_pieces[location] = funct_pieces[location][0] + funct_pieces[location][2:]
 
     if "0" in funct_pieces:
         location = funct_pieces.index("0")
-
         if funct_pieces[location - 2] != "=":
             for x in range(4):
                 funct_pieces.pop(location - 3)
-
-    if "-" in funct:
-        for items in funct_pieces:
-            if "-" in items:
-                location = funct_pieces.index(items)
-                if funct_pieces[location - 2] != "=":
-                    if funct_pieces[location - 2] == "+":
-                        funct_pieces.insert(location - 2, "-")
-                    else:
-                        funct_pieces.insert(location - 2, "+")
-                    funct_pieces.pop(location - 1)
-                    funct_pieces[location] = funct_pieces[location][2:]
-    output = ""
 
     for item in funct_pieces:
         output += item
     return output
 
 
-
-
-tests.tests()
