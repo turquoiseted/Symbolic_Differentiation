@@ -2,19 +2,20 @@
 
 """
 to do list:
-o parse output
-    - replace +s with -s when relevant
 o allow for chain rule
 o allow for bracket chain rule
 o do more advanced trig
 o logs
+o add treatment for second order difs
+
+o Add partial differentiation w.r.t. any variable once main is done
 """
 
 
 def dif(equ):
     """
     Takes the input and finds out which way it should be differentiated
-    :param equ:
+    :param equ: array
     """
     equ_array = parse_equation(equ)
     result = ""
@@ -210,20 +211,28 @@ def parse_output(funct):
             for x in range(4):
                 funct_pieces.pop(location - 3)
 
-    elif "-1" in funct:
-        # this needs to find the -1x and replace it with - x
+    if "-" in funct:
+        for items in funct_pieces:
+            if "-" in items:
+                location = funct_pieces.index(items)
+                if funct_pieces[location - 2] != "=":
+                    if funct_pieces[location - 2] == "+":
+                        funct_pieces.insert(location - 2, "-")
+                    else:
+                        funct_pieces.insert(location - 2, "+")
+                    funct_pieces.pop(location - 1)
 
-        output = ""
-        for item in funct_pieces:
-            output += item
-        return output
-    else:
-        return funct
+                    funct_pieces[location] = funct_pieces[location][2:]
+        # this needs to find the -1x and replace it with - x
+    output = ""
+    for item in funct_pieces:
+        output += item
+    return output
 
 
 #####TESTS#####
 def tests():
-    print(dif("y = 1"))
+    print()
 
     # test 0.5 - values
     assert dif("y = 1") == "dy/dx = 0"
