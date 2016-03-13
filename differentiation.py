@@ -1,12 +1,15 @@
 """time to differentiate"""
+import tests
 
 """
 to do list:
 o allow for chain rule
+    -this is started
+    -probs need refining a good deal
 o allow for bracket chain rule
 o do more advanced trig
 o logs
-o add treatment for second order difs
+o deal with un-formatted entry string i.e no spaces
 
 o Add partial differentiation w.r.t. any variable once main is done
 """
@@ -20,7 +23,10 @@ def dif(equ):
     equ_array = parse_equation(equ)
     result = ""
     for x in equ_array:
-        if ("sin" in x) or ("cos" in x):
+        count = x.count("x")
+        if count == 2:
+            result += chain_rule(x)
+        elif ("sin" in x) or ("cos" in x):
             result += trig_equ(x)
         elif "e" in x:
             result += exponential_equation(x)
@@ -30,13 +36,33 @@ def dif(equ):
             result += linear_equation(x)
         elif x == "y":
             result += "dy/dx"
+        elif x == "dy/dx":
+            result += "d2y/dx2"
         elif x.isdigit():
             result += "0"
-            # needs formatting
         else:
             result += x
     result = parse_output(result)
     return result
+
+
+def chain_rule(funct):
+    """
+    Deals with multiple x equations by using the chain rule
+    :param funct:
+    :return:
+    """
+    first_funct = ""
+    count = 0
+    for char in funct:
+        if char != "*":
+            first_funct += funct[count]
+            count += 1
+        elif char == "*":
+            break
+
+    second_funct = funct[count + 1:]
+    return dif(first_funct) + "*" + second_funct + " + " + dif(second_funct) + "*" + first_funct
 
 
 def trig_equ(funct):
@@ -203,7 +229,24 @@ def parse_coefficient(funct):
 
 
 def parse_output(funct):
+    """
+    Takes the outputted string and ensures good formatting/
+    :param funct:
+    :return:
+    """
+    # string.count will find my dupes
+
     funct_pieces = parse_equation(funct)
+    if "1" in funct:
+        for items in funct_pieces:
+            if "1" in items:
+                location = funct_pieces.index(items)
+                if items != "1":
+                    if (funct_pieces[location - 1] == " ") and (items[0] == "1") and (items[1] == "x"):
+                        funct_pieces[location] = funct_pieces[location][1:]
+                    elif (funct_pieces[location - 1] == " ") and (items[:2] == "1*") and (items[2] == "x"):
+                        funct_pieces[location] = funct_pieces[location][2:]
+
     if "0" in funct_pieces:
         location = funct_pieces.index("0")
 
@@ -221,61 +264,14 @@ def parse_output(funct):
                     else:
                         funct_pieces.insert(location - 2, "+")
                     funct_pieces.pop(location - 1)
-
                     funct_pieces[location] = funct_pieces[location][2:]
-        # this needs to find the -1x and replace it with - x
     output = ""
+
     for item in funct_pieces:
         output += item
     return output
 
 
-#####TESTS#####
-def tests():
-    print()
-
-    # test 0.5 - values
-    assert dif("y = 1") == "dy/dx = 0"
-    # test 1 - parse equ, very simple linear
-    assert parse_equation("y = x") == ["y", " ", "=", " ", "x"]
-    assert dif("y = x") == "dy/dx = 1"
-    assert dif("y = x + 2") == "dy/dx = 1"  # ammended
-    # test 2 - squares
-    assert parse_equation("x^2") == ["x^2"]
-    assert dif("y = x^2") == "dy/dx = 2x"
-    # test 3 - coefficents & linear
-    assert dif("y = 2x") == "dy/dx = 2"
-    # test 4 - linear equation moved to a funct
-    assert linear_equation("x") == "1"
-    assert linear_equation("20x") == "20"
-    # test 5 - basic polynomials
-    assert polynomial_equation("x^2") == "2x"
-    assert polynomial_equation("2x^2") == "4x"
-    assert polynomial_equation("x^3") == "3x^2"
-    assert polynomial_equation("25x^4") == "100x^3"
-    # text 5.5 - more adv polynomials
-    assert dif("y = x^3") == "dy/dx = 3x^2"
-    assert dif("y = 3x^5 + 2x + 5x^2") == "dy/dx = 15x^4 + 2 + 10x"
-    # test 6 - exponents
-    assert dif("y = e^x") == "dy/dx = e^x"
-    # test 7 - more adv exponents
-    assert dif("y = e^2x^2") == "dy/dx = 4xe^2x^2"
-    assert dif("y = 3e^x") == "dy/dx = 3e^x"
-    assert dif("y = 3e^2x^2") == "dy/dx = 12xe^2x^2"
-    # test 8 - basic trig
-    assert dif("y = cos(x)") == "dy/dx = -sin(x)"
-    assert dif("y = sin(x)") == "dy/dx = cos(x)"
-    # test 9 - more adv trig
-    assert dif("y = cos(2x)") == "dy/dx = -2sin(2x)"
-    assert dif("y = sin(2x)") == "dy/dx = 2cos(2x)"
-    assert dif("y = 3sin(x^2)") == "dy/dx = 6xcos(x^2)"
-    # test 10 - parse output
-    assert dif("y = 2x + 2") == "dy/dx = 2"
-    assert dif("y = 3sin(x^2) + 6") == "dy/dx = 6xcos(x^2)"
-    # test 11 - negative powers
-    assert dif("y = x^-1") == "dy/dx = -1x^-2"
-    # assert dif("y = x + x^-1") == "dy/dx = 1 + -1x^-2" #this needs to be better output
-    assert dif("y = x + x^-1") == "dy/dx = 1 - x^-2"
 
 
-tests()
+tests.tests()
