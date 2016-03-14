@@ -9,6 +9,7 @@ o allow for bracket chain rule
 o do more advanced trig
 o logs
 o deal with un-formatted entry string i.e no spaces
+o output in e followed by trig then descending powers
 
 o Add partial differentiation w.r.t. any variable once main is done
 """
@@ -39,6 +40,7 @@ def dif(equ):
             result += "0"
         else:
             result += x
+
     result = parse_output(result)
     return result
 
@@ -225,45 +227,72 @@ def parse_output(funct):
     :return:
     """
     # string.count will find my dupes
-
     funct_pieces = parse_equation(funct)
-    if "-" in funct:
-        for items in funct_pieces:
-            if "-" in items:
-                if items != "-":
-                    location = funct_pieces.index(items)
-                    if funct_pieces[location - 2] != "=":
-                        if funct_pieces[location - 2] == "+":
-                            funct_pieces.insert(location - 2, "-")
-                        else:
-                            funct_pieces.insert(location - 2, "+")
-                        funct_pieces.pop(location - 1)
-                        funct_pieces[location] = funct_pieces[location][2:]
     output = ""
-    if "1" in funct:
-        for items in funct_pieces:
-            if "1" in items:
-                location = funct_pieces.index(items)
-                if items != "1":
-                    if (funct_pieces[location - 1] == " ") and (items[0] == "1") and (items[1] == "x"):
-                        funct_pieces[location] = funct_pieces[location][1:]
-                    elif (funct_pieces[location - 1] == " ") and (items[:2] == "1*") and (items[2] == "x"):
-                        funct_pieces[location] = funct_pieces[location][2:]
-                    elif (funct_pieces[location - 1] == " ") and (items[:2] == "-1") and (items[2] == "x"):
-                        funct_pieces[location] = funct_pieces[location][0] + funct_pieces[location][2:]
-                    elif (funct_pieces[location - 1] == " ") and (items[:2] == "-1") and (items[2] == "c"):
-                        funct_pieces[location] = funct_pieces[location][0] + funct_pieces[location][2:]
-                    elif (funct_pieces[location - 1] == " ") and (items[:2] == "-1") and (items[2] == "s"):
-                        funct_pieces[location] = funct_pieces[location][0] + funct_pieces[location][2:]
+    if len(funct) > 5:
+        funct_pieces = parse_equation(funct)
+        if "1" in funct:
+            for items in funct_pieces:
+                if "1" in items:
+                    location = funct_pieces.index(items)
+                    if items != "1":
+                        alpha_check = ["x", "c", "s"]
+                        if (funct_pieces[location - 1] == " ") and (items[0] == "1") and (items[1] == "x"):
+                            funct_pieces[location] = funct_pieces[location][1:]
+                        elif (funct_pieces[location - 1] == " ") and (items[:2] == "1*") and (items[2] == "x"):
+                            funct_pieces[location] = funct_pieces[location][2:]
+                        elif (funct_pieces[location - 1] == " ") and (items[:2] == "-1") and (items[2] in alpha_check):
+                            funct_pieces[location] = funct_pieces[location][0] + funct_pieces[location][2:]
 
-    if "0" in funct_pieces:
-        location = funct_pieces.index("0")
-        if funct_pieces[location - 2] != "=":
-            for x in range(4):
-                funct_pieces.pop(location - 3)
+        if "0" in funct_pieces:
+            location = funct_pieces.index("0")
+            if funct_pieces[location - 2] != "=":
+                for x in range(4):
+                    funct_pieces.pop(location - 3)
+        # test for multiple integers
+
+        new_int = 0
+        count = 0
+        bool_check = False
+        banned_values = ["=", " ", "+", "-", "0", ""]
+        while count < len(funct_pieces):
+            if ("x" not in funct_pieces[count]) and (funct_pieces[count] not in banned_values):
+                bool_check = True
+                if funct_pieces[count - 2] == "=":
+                    new_int += int(funct_pieces[count])
+                    for x in range(2):
+                        funct_pieces.pop(count - 1)
+                    count -= 2
+                else:
+                    new_int += int(funct_pieces[count])
+                    for x in range(4):
+                        funct_pieces.pop(count - 3)
+                    count -= 4
+            count += 1
+
+        if bool_check:
+            if (funct_pieces[-1] == "=") or (funct_pieces[-1] == " "):
+                funct_pieces.append(" ")
+                funct_pieces.append(str(new_int))
+            else:
+                funct_pieces.append(" ")
+                funct_pieces.append("+")
+                funct_pieces.append(" ")
+                funct_pieces.append(str(new_int))
+
+        if "-" in funct:
+            for items in funct_pieces:
+                if "-" in items:
+                    if items != "-":
+                        location = funct_pieces.index(items)
+                        if funct_pieces[location - 2] != "=":
+                            if funct_pieces[location - 2] == "+":
+                                funct_pieces.insert(location - 2, "-")
+                            else:
+                                funct_pieces.insert(location - 2, "+")
+                            funct_pieces.pop(location - 1)
+                            funct_pieces[location] = funct_pieces[location][1:]
 
     for item in funct_pieces:
         output += item
     return output
-
-
