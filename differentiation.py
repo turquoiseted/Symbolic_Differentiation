@@ -30,7 +30,7 @@ def dif(equ):
             result += chain_rule(x)
         elif "log" in x:
             result += log_equ(x)
-        elif ("sin" in x) or ("cos" in x):
+        elif ("sin" in x) or ("cos" in x) or ("tan" in x):
             result += trig_equ(x)
         elif "e" in x:
             result += exponential_equation(x)
@@ -110,26 +110,47 @@ def trig_equ(funct):
             new_equ += "cos(" + equation + ")"
             return new_equ
 
+        elif "tan" in funct:
+            if equation == "x":
+                return "sec^2(x)"
+            new_equ += dif(equation)
+            new_equ += "sec^2(" + equation + ")"
+            return new_equ
+
     else:
         coefficient = parse_coefficient(funct)
         funct = funct[len(coefficient):]
         equation = funct[4:-1]
-
         if "cos" in funct:
             new_equ = "-"
-            bracket = dif(equation)
-            new_equ += str(int(parse_coefficient(bracket)) * int(coefficient))
-            new_equ += bracket[len(parse_coefficient(bracket)):]
-            new_equ += "sin(" + equation + ")"
-            return new_equ
+            return trig_chain_rule(coefficient, equation, new_equ, funct)
 
-        elif "sin" in funct:
+        elif ("sin" in funct) or ("tan" in funct):
             new_equ = ""
-            bracket = dif(equation)
-            new_equ += str(int(parse_coefficient(bracket)) * int(coefficient))
-            new_equ += bracket[len(parse_coefficient(bracket)):]
-            new_equ += "cos(" + equation + ")"
-            return new_equ
+            return trig_chain_rule(coefficient, equation, new_equ, funct)
+
+
+def trig_chain_rule(coefficient, equation, new_equ, funct):
+    """
+    Reduces clutter in the trig function by doing the chain rule seperatly
+    :param funct:
+    :param coefficient:
+    :param equation:
+    :param new_equ:
+    :return:
+    """
+
+    bracket = dif(equation)
+    new_equ += str(int(parse_coefficient(bracket)) * int(coefficient))
+    new_equ += bracket[len(parse_coefficient(bracket)):]
+    if "cos" in funct:
+        new_equ += "sin(" + equation + ")"
+    elif "sin" in funct:
+        new_equ += "cos(" + equation + ")"
+    elif "tan" in funct:
+        new_equ += "sec^2(" + equation + ")"
+
+    return new_equ
 
 
 def exponential_equation(funct):
@@ -202,7 +223,8 @@ def parse_coefficient(funct):
     else:
         coefficient = ""
         count = 0
-        while (funct[count] != "x") and (funct[count] != "e") and (funct[count] != "c") and (funct[count] != "s"):
+        check_alpha = ["x", "c", "e", "s", "t", "n"]
+        while (funct[count] not in check_alpha):
             coefficient += funct[count]
             count += 1
 

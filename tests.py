@@ -1,5 +1,6 @@
 import differentiation
-
+import parse_output
+import parse_equation
 
 #####TESTS#####
 
@@ -14,12 +15,12 @@ def test():
     assert differentiation.dif("y = 1") == "dy/dx = 0"
 
     # test 1 - parse equ, very simple linear
-    assert differentiation.parse_equation("y = x") == ["y", " ", "=", " ", "x"]
+    assert parse_equation.parse_equation("y = x") == ["y", " ", "=", " ", "x"]
     assert differentiation.dif("y = x") == "dy/dx = 1"
     assert differentiation.dif("y = x + 2") == "dy/dx = 1"  # ammended
 
     # test 2 - squares
-    assert differentiation.parse_equation("x^2") == ["x^2"]
+    assert parse_equation.parse_equation("x^2") == ["x^2"]
     assert differentiation.dif("y = x^2") == "dy/dx = 2x"
 
     # test 3 - coefficents & linear
@@ -66,7 +67,7 @@ def test():
 
     # test 11.5 - output gathers like terms
     # assert differentiation.dif("y = x^2 + x^2") == "dy/dx = 4x"
-    assert differentiation.dif("y = x + x") == "dy/dx = 2"#
+    assert differentiation.dif("y = x + x") == "dy/dx = 2"
 
     # test 12 - chain rule, multiple x's
     assert differentiation.dif("y = x^2*x") == 'dy/dx = 2x*x + x^2'
@@ -75,8 +76,12 @@ def test():
     assert differentiation.dif("y = log(x)") == 'dy/dx = 1/x'
     assert differentiation.dif("y = log(x^2)") == 'dy/dx = 2x/x^2'
 
+    # test 14 - tan(x)
+    assert differentiation.dif("y = tan(2x)") == "dy/dx = 2sec^2(2x)"
+    assert differentiation.dif("y = 3tan(x^2)") == "dy/dx = 6xsec^2(x^2)"
+
     # assorted tests
-    assert differentiation.parse_output("dy/dx = 1x") == "dy/dx = x"
+    assert parse_output.parse_output("dy/dx = 1x") == "dy/dx = x"
 
 
 test()

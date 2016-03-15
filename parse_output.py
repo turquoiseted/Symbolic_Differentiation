@@ -7,10 +7,10 @@ def parse_output(funct):
     :param funct:
     :return:
     """
-    # string.count will find my dupes
     funct_pieces = parse_equation.parse_equation(funct)
     output = ""
     if len(funct) > 5:
+        # replace any 1s so functionally they are on their own
         funct_pieces = parse_equation.parse_equation(funct)
         if "1" in funct:
             for items in funct_pieces:
@@ -25,13 +25,14 @@ def parse_output(funct):
                         elif (funct_pieces[location - 1] == " ") and (items[:2] == "-1") and (items[2] in alpha_check):
                             funct_pieces[location] = funct_pieces[location][0] + funct_pieces[location][2:]
 
+        # remove any floating 0s
         if "0" in funct_pieces:
             location = funct_pieces.index("0")
             if funct_pieces[location - 2] != "=":
                 for x in range(4):
                     funct_pieces.pop(location - 3)
-        # test for multiple integers
 
+        # test for multiple integers
         new_int = 0
         count = 0
         bool_check = False
@@ -51,6 +52,7 @@ def parse_output(funct):
                     count -= 4
             count += 1
 
+        # if there has been integers put them onto the end
         if bool_check:
             if (funct_pieces[-1] == "=") or (funct_pieces[-1] == " "):
                 funct_pieces.append(" ")
@@ -61,6 +63,7 @@ def parse_output(funct):
                 funct_pieces.append(" ")
                 funct_pieces.append(str(new_int))
 
+        # replace negative numbers with a minus sign
         if "-" in funct:
             for items in funct_pieces:
                 if "-" in items:
