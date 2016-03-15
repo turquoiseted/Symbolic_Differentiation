@@ -26,6 +26,8 @@ def dif(equ):
         count = x.count("x")
         if count == 2:
             result += chain_rule(x)
+        elif ("log" in x):
+            result += log_equ(x)
         elif ("sin" in x) or ("cos" in x):
             result += trig_equ(x)
         elif "e" in x:
@@ -63,6 +65,26 @@ def chain_rule(funct):
     second_funct = funct[count + 1:]
     return dif(first_funct) + "*" + second_funct + " + " + dif(second_funct) + "*" + first_funct
 
+
+def log_equ(funct):
+    """
+    Gives the output for a function which has logarithmic parts to it
+    :param funct:
+    """
+    if funct[:3] == "log":
+        equ = funct[4:-1]
+        return str(polynomial_equation(equ)) + "/" + equ
+    # else:
+    #     coefficient = parse_coefficient(funct)
+    #     funct = funct[len(coefficient):]
+    #     if len(funct) == 3:
+    #         return coefficient + funct
+    #     else:
+    #         equ = funct[2:]
+    #         equ = polynomial_equation(equ)
+    #         funct_coeff = int(parse_coefficient(equ))
+    #         equ = equ[len(str(funct_coeff)):]
+    #         return str(funct_coeff * int(coefficient)) + equ + funct
 
 def trig_equ(funct):
     """
@@ -236,7 +258,7 @@ def parse_output(funct):
                 if "1" in items:
                     location = funct_pieces.index(items)
                     if items != "1":
-                        alpha_check = ["x", "c", "s"]
+                        alpha_check = ["x", "c", "s", "t", "l"]
                         if (funct_pieces[location - 1] == " ") and (items[0] == "1") and (items[1] == "x"):
                             funct_pieces[location] = funct_pieces[location][1:]
                         elif (funct_pieces[location - 1] == " ") and (items[:2] == "1*") and (items[2] == "x"):
