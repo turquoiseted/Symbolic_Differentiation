@@ -1,3 +1,5 @@
+import parse_output
+import parse_equation
 """time to differentiate"""
 
 """
@@ -20,13 +22,13 @@ def dif(equ):
     Takes the input and finds out which way it should be differentiated
     :param equ: array
     """
-    equ_array = parse_equation(equ)
+    equ_array = parse_equation.parse_equation(equ)
     result = ""
     for x in equ_array:
         count = x.count("x")
         if count == 2:
             result += chain_rule(x)
-        elif ("log" in x):
+        elif "log" in x:
             result += log_equ(x)
         elif ("sin" in x) or ("cos" in x):
             result += trig_equ(x)
@@ -43,7 +45,7 @@ def dif(equ):
         else:
             result += x
 
-    result = parse_output(result)
+    result = parse_output.parse_output(result)
     return result
 
 
@@ -85,6 +87,7 @@ def log_equ(funct):
     #         funct_coeff = int(parse_coefficient(equ))
     #         equ = equ[len(str(funct_coeff)):]
     #         return str(funct_coeff * int(coefficient)) + equ + funct
+
 
 def trig_equ(funct):
     """
@@ -189,42 +192,6 @@ def polynomial_equation(funct):
                 return str(new_coefficient) + "x^" + str(int(multiplier) - 1)
 
 
-def parse_equation(equ):
-    """
-    Break the given string into all the pieces of the equation to be sorted after
-    :param equ: string
-    """
-    array = []
-    val = ""
-    count = 0
-    brackets = False
-    for x in equ:
-        count += 1
-        if brackets:
-            if x != ")":
-                val += x
-            else:
-                brackets = False
-                val += x
-                array.append(val)
-                val = ""
-                # bracket function needs finish
-        elif x == "(":
-            val += x
-            brackets = True
-        elif (x != " ") and (count != len(equ)):
-            val += x
-        elif x == " ":
-            array.append(val)
-            array.append(" ")
-            val = ""
-        else:
-            val += x
-            array.append(val)
-
-    return array
-
-
 def parse_coefficient(funct):
     """
     Works out the just the coefficient of the given function
@@ -240,81 +207,3 @@ def parse_coefficient(funct):
             count += 1
 
     return coefficient
-
-
-def parse_output(funct):
-    """
-    Takes the outputted string and ensures good formatting, avoiding 1* +- etc
-    :param funct:
-    :return:
-    """
-    # string.count will find my dupes
-    funct_pieces = parse_equation(funct)
-    output = ""
-    if len(funct) > 5:
-        funct_pieces = parse_equation(funct)
-        if "1" in funct:
-            for items in funct_pieces:
-                if "1" in items:
-                    location = funct_pieces.index(items)
-                    if items != "1":
-                        alpha_check = ["x", "c", "s", "t", "l"]
-                        if (funct_pieces[location - 1] == " ") and (items[0] == "1") and (items[1] == "x"):
-                            funct_pieces[location] = funct_pieces[location][1:]
-                        elif (funct_pieces[location - 1] == " ") and (items[:2] == "1*") and (items[2] == "x"):
-                            funct_pieces[location] = funct_pieces[location][2:]
-                        elif (funct_pieces[location - 1] == " ") and (items[:2] == "-1") and (items[2] in alpha_check):
-                            funct_pieces[location] = funct_pieces[location][0] + funct_pieces[location][2:]
-
-        if "0" in funct_pieces:
-            location = funct_pieces.index("0")
-            if funct_pieces[location - 2] != "=":
-                for x in range(4):
-                    funct_pieces.pop(location - 3)
-        # test for multiple integers
-
-        new_int = 0
-        count = 0
-        bool_check = False
-        banned_values = ["=", " ", "+", "-", "0", ""]
-        while count < len(funct_pieces):
-            if ("x" not in funct_pieces[count]) and (funct_pieces[count] not in banned_values):
-                bool_check = True
-                if funct_pieces[count - 2] == "=":
-                    new_int += int(funct_pieces[count])
-                    for x in range(2):
-                        funct_pieces.pop(count - 1)
-                    count -= 2
-                else:
-                    new_int += int(funct_pieces[count])
-                    for x in range(4):
-                        funct_pieces.pop(count - 3)
-                    count -= 4
-            count += 1
-
-        if bool_check:
-            if (funct_pieces[-1] == "=") or (funct_pieces[-1] == " "):
-                funct_pieces.append(" ")
-                funct_pieces.append(str(new_int))
-            else:
-                funct_pieces.append(" ")
-                funct_pieces.append("+")
-                funct_pieces.append(" ")
-                funct_pieces.append(str(new_int))
-
-        if "-" in funct:
-            for items in funct_pieces:
-                if "-" in items:
-                    if items != "-":
-                        location = funct_pieces.index(items)
-                        if funct_pieces[location - 2] != "=":
-                            if funct_pieces[location - 2] == "+":
-                                funct_pieces.insert(location - 2, "-")
-                            else:
-                                funct_pieces.insert(location - 2, "+")
-                            funct_pieces.pop(location - 1)
-                            funct_pieces[location] = funct_pieces[location][1:]
-
-    for item in funct_pieces:
-        output += item
-    return output
