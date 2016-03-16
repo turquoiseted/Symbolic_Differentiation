@@ -16,6 +16,8 @@ o output in e followed by trig then descending powers
 o Add partial differentiation w.r.t. any variable once main is done
 """
 
+check_alpha = ["x", "c", "e", "s", "t", "n", " ", "+", "-"]
+
 
 def dif(equ):
     """
@@ -32,6 +34,8 @@ def dif(equ):
             result += log_equ(x)
         elif ("sin" in x) or ("cos" in x) or ("tan" in x):
             result += trig_equ(x)
+        # elif ("(" in x):
+
         elif "e" in x:
             result += exponential_equation(x)
         elif "x" in x:
@@ -216,17 +220,35 @@ def polynomial_equation(funct):
                 return str(new_coefficient) + "x^" + str(int(multiplier) - 1)
 
 
+def parse_bracket(funct):
+    bracket_index = funct.index("(")
+    coefficient = int(funct[:bracket_index])
+    bracket_array = parse_equation.parse_equation(funct[bracket_index + 1:-1])
+    expanded_bracket = ""
+    for x in bracket_array:
+        if x in check_alpha:
+            expanded_bracket += x
+        elif x.isdigit():
+            expanded_bracket += (str(int(x) * coefficient))
+        elif x[0] in check_alpha:
+            expanded_bracket += (str(coefficient) + x)
+        else:
+            raw_coeff = int(parse_coefficient(x))
+            expanded_bracket += ((str(raw_coeff * coefficient)) + x[len(str(raw_coeff)):])
+    return expanded_bracket
+
+
 def parse_coefficient(funct):
     """
     Works out the just the coefficient of the given function
     :param funct:
     """
+
     if funct[0] == "x":
         coefficient = 1
     else:
         coefficient = ""
         count = 0
-        check_alpha = ["x", "c", "e", "s", "t", "n"]
         while funct[count] not in check_alpha:
             coefficient += funct[count]
             count += 1

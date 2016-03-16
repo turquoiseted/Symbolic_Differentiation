@@ -18,6 +18,8 @@ def parse_equation(equ):
                 array.append(val)
                 val = ""
                 # bracket function needs finish
+
+        # Check if its a bracket so all content is kept by brackets
         elif x == "(":
             val += x
             brackets = True

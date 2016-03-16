@@ -80,6 +80,9 @@ def test():
     assert differentiation.dif("y = tan(2x)") == "dy/dx = 2sec^2(2x)"
     assert differentiation.dif("y = 3tan(x^2)") == "dy/dx = 6xsec^2(x^2)"
 
+    # test 15 - expand brackets
+    assert differentiation.parse_bracket("3(2x + 2)") == "6x + 6"
+
     # assorted tests
     assert parse_output.parse_output("dy/dx = 1x") == "dy/dx = x"
 
