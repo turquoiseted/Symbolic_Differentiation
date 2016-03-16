@@ -12,6 +12,9 @@ def parse_equation(equ):
         if brackets:
             if x != ")":
                 val += x
+            elif x != equ[-1]: # this is shit and should be improved post haste
+                brackets = False
+                val += x
             else:
                 brackets = False
                 val += x

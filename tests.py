@@ -87,5 +87,5 @@ def test():
     # assorted tests
     assert parse_output.parse_output("dy/dx = 1x") == "dy/dx = x"
 
-
+    print(parse_equation.parse_equation("y = 2(x + 2)^2 + 5"))
 test()
