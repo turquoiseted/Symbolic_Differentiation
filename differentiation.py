@@ -34,8 +34,8 @@ def dif(equ):
             result += log_equ(x)
         elif ("sin" in x) or ("cos" in x) or ("tan" in x):
             result += trig_equ(x)
-        # elif ("(" in x):
-
+        elif ("(" in x):
+            result += dif(parse_bracket(x))
         elif "e" in x:
             result += exponential_equation(x)
         elif "x" in x:

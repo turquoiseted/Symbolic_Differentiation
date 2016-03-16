@@ -9,7 +9,7 @@ def test():
     """
     :rtype: tests
     """
-    print()
+    print( differentiation.dif("y = 3(2x + 2)"))
 
     # test 0.5 - values
     assert differentiation.dif("y = 1") == "dy/dx = 0"
@@ -82,6 +82,7 @@ def test():
 
     # test 15 - expand brackets
     assert differentiation.parse_bracket("3(2x + 2)") == "6x + 6"
+    assert differentiation.dif("y = 3(2x + 2)") == "dy/dx = 6"
 
     # assorted tests
     assert parse_output.parse_output("dy/dx = 1x") == "dy/dx = x"
