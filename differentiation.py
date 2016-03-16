@@ -94,7 +94,7 @@ def trig_equ(funct):
     trig
     :param funct:
     """
-    if (funct[:3] == "cos") or (funct[:3] == "sin"):
+    if (funct[:3] == "cos") or (funct[:3] == "sin") or (funct[:3] == "tan"):
         new_equ = ""
         equation = funct[4:-1]
         if "cos" in funct:
@@ -125,7 +125,11 @@ def trig_equ(funct):
             new_equ = "-"
             return trig_chain_rule(coefficient, equation, new_equ, funct)
 
-        elif ("sin" in funct) or ("tan" in funct):
+        elif "sin" in funct:
+            new_equ = ""
+            return trig_chain_rule(coefficient, equation, new_equ, funct)
+
+        elif "tan" in funct:
             new_equ = ""
             return trig_chain_rule(coefficient, equation, new_equ, funct)
 
@@ -139,7 +143,6 @@ def trig_chain_rule(coefficient, equation, new_equ, funct):
     :param new_equ:
     :return:
     """
-
     bracket = dif(equation)
     new_equ += str(int(parse_coefficient(bracket)) * int(coefficient))
     new_equ += bracket[len(parse_coefficient(bracket)):]
@@ -224,7 +227,7 @@ def parse_coefficient(funct):
         coefficient = ""
         count = 0
         check_alpha = ["x", "c", "e", "s", "t", "n"]
-        while (funct[count] not in check_alpha):
+        while funct[count] not in check_alpha:
             coefficient += funct[count]
             count += 1
 
