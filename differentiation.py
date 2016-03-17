@@ -24,8 +24,11 @@ def dif(equ):
     Takes the input and finds out which way it should be differentiated
     :param equ: array
     """
+
     equ_array = parse_equation.parse_equation(equ)
     result = ""
+    print(equ)
+    print(equ_array)
     for x in equ_array:
         count = x.count("x")
         if count == 2:

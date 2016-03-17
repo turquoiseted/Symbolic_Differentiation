@@ -1,3 +1,6 @@
+split_character = [" ", "+", "="]
+
+
 def parse_equation(equ):
     """
     Break the given string into all the pieces of the equation to be sorted after
@@ -26,11 +29,13 @@ def parse_equation(equ):
         elif x == "(":
             val += x
             brackets = True
-        elif (x != " ") and (count != len(equ)):
+        elif (x not in split_character) and (count != len(equ)):
             val += x
-        elif x == " ":
-            array.append(val)
-            array.append(" ")
+        # split each value
+        elif x in split_character:
+            if val != "":
+                array.append(val)
+            array.append(x)
             val = ""
         else:
             val += x

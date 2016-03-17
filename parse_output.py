@@ -1,4 +1,5 @@
 import parse_equation
+check_gap = ["=", " ", "+", "-"]
 
 
 def parse_output(funct):
@@ -9,19 +10,20 @@ def parse_output(funct):
     """
     funct_pieces = parse_equation.parse_equation(funct)
     output = ""
+    #check if its a full equation
     if len(funct) > 5:
         # replace any 1s so functionally they are on their own
-        funct_pieces = parse_equation.parse_equation(funct)
         if "1" in funct:
             for items in funct_pieces:
                 if "1" in items:
                     location = funct_pieces.index(items)
                     if items != "1":
                         alpha_check = ["x", "c", "s", "t", "l"]
-                        if (funct_pieces[location - 1] == " ") and (items[0] == "1") and (items[1] == "x"):
+                        if (funct_pieces[location - 1] in check_gap) and (items[0] == "1") and (items[1] in alpha_check):
                             funct_pieces[location] = funct_pieces[location][1:]
                         elif (funct_pieces[location - 1] == " ") and (items[:2] == "1*") and (items[2] == "x"):
                             funct_pieces[location] = funct_pieces[location][2:]
+                        #this can probs be removed
                         elif (funct_pieces[location - 1] == " ") and (items[:2] == "-1") and (items[2] in alpha_check):
                             funct_pieces[location] = funct_pieces[location][0] + funct_pieces[location][2:]
 
