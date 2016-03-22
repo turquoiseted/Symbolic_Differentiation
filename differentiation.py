@@ -246,7 +246,6 @@ def parse_coefficient(funct):
     Works out the just the coefficient of the given function
     :param funct:
     """
-
     if funct[0] == "x":
         coefficient = 1
     else:
